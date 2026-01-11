@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase-server'
 import { validateItemCreate, validateItemUpdate } from '@/lib/validation'
+import { checkRateLimit, getClientIdentifier, rateLimitResponse, RATE_LIMITS } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'items-get', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -44,12 +52,19 @@ export async function GET(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(items)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to fetch items' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'items-post', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -96,12 +111,19 @@ export async function POST(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(item, { status: 201 })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to create item' }, { status: 500 })
   }
 }
 
 export async function PUT(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'items-put', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -142,12 +164,19 @@ export async function PUT(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(item)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to update item' }, { status: 500 })
   }
 }
 
 export async function DELETE(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'items-delete', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -183,7 +212,7 @@ export async function DELETE(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to delete item' }, { status: 500 })
   }
 }

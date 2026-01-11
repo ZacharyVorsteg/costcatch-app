@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase-server'
 import { validateVendorCreate, validateVendorUpdate } from '@/lib/validation'
+import { checkRateLimit, getClientIdentifier, rateLimitResponse, RATE_LIMITS } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'vendors-get', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -30,12 +38,19 @@ export async function GET(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(vendors)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to fetch vendors' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'vendors-post', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -79,12 +94,19 @@ export async function POST(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(vendor, { status: 201 })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to create vendor' }, { status: 500 })
   }
 }
 
 export async function PUT(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'vendors-put', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -125,12 +147,19 @@ export async function PUT(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(vendor)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to update vendor' }, { status: 500 })
   }
 }
 
 export async function DELETE(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'vendors-delete', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -166,7 +195,7 @@ export async function DELETE(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json({ success: true })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to delete vendor' }, { status: 500 })
   }
 }

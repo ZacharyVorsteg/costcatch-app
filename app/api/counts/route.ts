@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase-server'
 import { validateCountCreate } from '@/lib/validation'
+import { checkRateLimit, getClientIdentifier, rateLimitResponse, RATE_LIMITS } from '@/lib/rate-limit'
+
+// Maximum allowed values to prevent abuse
+const MAX_LIMIT = 100
+const MAX_OFFSET = 10000
 
 export async function GET(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'counts-get', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -22,8 +34,9 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const limit = parseInt(searchParams.get('limit') || '30')
-    const offset = parseInt(searchParams.get('offset') || '0')
+    // Enforce max limits to prevent abuse
+    const limit = Math.min(parseInt(searchParams.get('limit') || '30'), MAX_LIMIT)
+    const offset = Math.min(parseInt(searchParams.get('offset') || '0'), MAX_OFFSET)
 
     const { data: counts, error } = await supabase
       .from('inventory_counts')
@@ -35,12 +48,19 @@ export async function GET(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(counts)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to fetch counts' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'counts-post', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -77,7 +97,7 @@ export async function POST(request: NextRequest) {
         counted_by: user.id,
         count_date: count_date || new Date().toISOString().split('T')[0],
         total_value: items.reduce(
-          (sum: number, item: any) => sum + item.total_value,
+          (sum: number, item: { total_value: number }) => sum + item.total_value,
           0
         ),
       })
@@ -87,7 +107,7 @@ export async function POST(request: NextRequest) {
     if (countError) throw countError
 
     // Create count items
-    const countItems = items.map((item: any) => ({
+    const countItems = items.map((item: { item_id: string; quantity: number; unit_price: number; total_value: number }) => ({
       count_id: count.id,
       item_id: item.item_id,
       quantity: item.quantity,
@@ -102,7 +122,7 @@ export async function POST(request: NextRequest) {
     if (itemsError) throw itemsError
 
     return NextResponse.json(count, { status: 201 })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to create count' }, { status: 500 })
   }
 }

@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase-server'
 import { validateWasteCreate } from '@/lib/validation'
+import { checkRateLimit, getClientIdentifier, rateLimitResponse, RATE_LIMITS } from '@/lib/rate-limit'
+
+// Maximum allowed values to prevent abuse
+const MAX_DAYS = 365
 
 export async function GET(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'waste-get', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -22,7 +33,8 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const days = parseInt(searchParams.get('days') || '30')
+    // Enforce max limit to prevent abuse
+    const days = Math.min(parseInt(searchParams.get('days') || '30'), MAX_DAYS)
     const reason = searchParams.get('reason')
 
     const startDate = new Date()
@@ -44,12 +56,19 @@ export async function GET(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(logs)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to fetch waste logs' }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting
+  const clientId = getClientIdentifier(request)
+  const rateLimit = checkRateLimit(clientId, 'waste-post', RATE_LIMITS.api)
+  if (!rateLimit.success) {
+    return rateLimitResponse(rateLimit)
+  }
+
   try {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -106,7 +125,7 @@ export async function POST(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(log, { status: 201 })
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  } catch {
+    return NextResponse.json({ error: 'Failed to log waste' }, { status: 500 })
   }
 }
