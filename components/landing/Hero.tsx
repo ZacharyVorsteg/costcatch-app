@@ -44,18 +44,18 @@ export function Hero() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-2xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">$162B</div>
-              <div className="text-sm text-gray-500">Annual restaurant food waste</div>
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900">$162B</div>
+              <div className="text-xs sm:text-sm text-gray-500">Annual restaurant food waste</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">60 sec</div>
-              <div className="text-sm text-gray-500">Daily inventory time</div>
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900">60 sec</div>
+              <div className="text-xs sm:text-sm text-gray-500">Daily inventory time</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900">10-15%</div>
-              <div className="text-sm text-gray-500">Average cost reduction</div>
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900">10-15%</div>
+              <div className="text-xs sm:text-sm text-gray-500">Average cost reduction</div>
             </div>
           </div>
         </div>
