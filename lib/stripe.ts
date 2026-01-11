@@ -20,7 +20,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     id: 'starter',
     name: 'Starter',
     price: 79,
-    priceId: 'price_starter_monthly',
+    priceId: process.env.STRIPE_PRICE_STARTER || 'price_starter_monthly',
     features: [
       'Up to 100 inventory items',
       'Daily inventory counts',
@@ -39,7 +39,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     id: 'growth',
     name: 'Growth',
     price: 129,
-    priceId: 'price_growth_monthly',
+    priceId: process.env.STRIPE_PRICE_GROWTH || 'price_growth_monthly',
     features: [
       'Unlimited inventory items',
       'Real-time inventory counts',
