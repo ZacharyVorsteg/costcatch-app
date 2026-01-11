@@ -75,8 +75,8 @@ export function ItemForm({
         is_active: formData.is_active,
       })
       onClose()
-    } catch (error) {
-      console.error('Error saving item:', error)
+    } catch {
+      // Parent handles the error
     } finally {
       setLoading(false)
     }

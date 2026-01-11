@@ -60,8 +60,8 @@ export default function WastePage() {
           setItems(itemsData || [])
         }
       }
-    } catch (error) {
-      console.error('Error loading waste data:', error)
+    } catch {
+      // Waste data load failed - continue with empty state
     } finally {
       setLoading(false)
     }
@@ -112,10 +112,8 @@ export default function WastePage() {
           }
         }
       }
-    } catch (error) {
-      console.error('Error saving waste:', error)
+    } catch {
       toast.error('Failed to log waste')
-      throw error
     }
   }
 

@@ -69,8 +69,8 @@ function SettingsContent() {
           })
         }
       }
-    } catch (error) {
-      console.error('Error loading settings:', error)
+    } catch {
+      // Settings load failed - continue with defaults
     } finally {
       setLoading(false)
     }
@@ -98,8 +98,7 @@ function SettingsContent() {
       // Reload data
       await loadData()
       toast.success('Settings saved')
-    } catch (error) {
-      console.error('Error saving settings:', error)
+    } catch {
       toast.error('Failed to save settings')
     } finally {
       setSaving(false)
@@ -113,8 +112,7 @@ function SettingsContent() {
       })
       const { url } = await response.json()
       window.location.href = url
-    } catch (error) {
-      console.error('Error opening customer portal:', error)
+    } catch {
       toast.error('Failed to open billing portal')
     }
   }
@@ -128,8 +126,7 @@ function SettingsContent() {
       })
       const { url } = await response.json()
       window.location.href = url
-    } catch (error) {
-      console.error('Error creating checkout session:', error)
+    } catch {
       toast.error('Failed to start checkout')
     }
   }

@@ -102,13 +102,25 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { data: restaurant } = await supabase
+      .from('restaurants')
+      .select('id')
+      .eq('user_id', user.id)
+      .single()
+
+    if (!restaurant) {
+      return NextResponse.json({ error: 'Restaurant not found' }, { status: 404 })
+    }
+
     const body = await request.json()
     const { id, ...updates } = body
 
+    // Ensure item belongs to user's restaurant
     const { data: item, error } = await supabase
       .from('inventory_items')
       .update(updates)
       .eq('id', id)
+      .eq('restaurant_id', restaurant.id)
       .select('*, category:categories(*), vendor:vendors(*)')
       .single()
 
@@ -129,6 +141,16 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { data: restaurant } = await supabase
+      .from('restaurants')
+      .select('id')
+      .eq('user_id', user.id)
+      .single()
+
+    if (!restaurant) {
+      return NextResponse.json({ error: 'Restaurant not found' }, { status: 404 })
+    }
+
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
@@ -136,10 +158,12 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Item ID required' }, { status: 400 })
     }
 
+    // Ensure item belongs to user's restaurant
     const { error } = await supabase
       .from('inventory_items')
       .delete()
       .eq('id', id)
+      .eq('restaurant_id', restaurant.id)
 
     if (error) throw error
 

@@ -39,8 +39,7 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(false)
 
   const handleExport = (format: 'csv' | 'pdf') => {
-    // In production, this would generate and download the report
-    console.log(`Exporting as ${format}`)
+    // Export feature placeholder
     alert(`Export as ${format.toUpperCase()} - Feature coming soon!`)
   }
 

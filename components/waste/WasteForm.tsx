@@ -39,8 +39,8 @@ export function WasteForm({ isOpen, onClose, onSave, items }: WasteFormProps) {
       })
       setFormData({ item_id: '', quantity: '', reason: '', notes: '' })
       onClose()
-    } catch (error) {
-      console.error('Error saving waste:', error)
+    } catch {
+      // Parent handles the error
     } finally {
       setLoading(false)
     }

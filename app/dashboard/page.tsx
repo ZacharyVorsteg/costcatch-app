@@ -66,8 +66,8 @@ export default function DashboardPage() {
             setRestaurant(restaurantData)
           }
         }
-      } catch (error) {
-        console.error('Error loading dashboard data:', error)
+      } catch {
+        // Dashboard load failed - continue with empty state
       } finally {
         setLoading(false)
       }

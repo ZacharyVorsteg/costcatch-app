@@ -70,8 +70,8 @@ export default function CountPage() {
           setCategories(categoriesData || [])
         }
       }
-    } catch (error) {
-      console.error('Error loading items:', error)
+    } catch {
+      // Items load failed - continue with empty state
     } finally {
       setLoading(false)
     }
@@ -149,8 +149,7 @@ export default function CountPage() {
           setShowComplete(true)
         }
       }
-    } catch (error) {
-      console.error('Error saving count:', error)
+    } catch {
       toast.error('Failed to save count')
     } finally {
       setSaving(false)

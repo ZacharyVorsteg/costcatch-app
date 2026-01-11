@@ -64,8 +64,8 @@ export default function VendorsPage() {
           setItems(itemsData || [])
         }
       }
-    } catch (error) {
-      console.error('Error loading vendors:', error)
+    } catch {
+      // Vendors load failed - continue with empty state
     } finally {
       setLoading(false)
     }
@@ -135,8 +135,7 @@ export default function VendorsPage() {
           setIsFormOpen(false)
         }
       }
-    } catch (error) {
-      console.error('Error saving vendor:', error)
+    } catch {
       toast.error('Failed to save vendor')
     } finally {
       setSaving(false)
@@ -150,8 +149,7 @@ export default function VendorsPage() {
         if (error) throw error
         setVendors(vendors.filter((v) => v.id !== vendor.id))
         toast.success('Vendor deleted')
-      } catch (error) {
-        console.error('Error deleting vendor:', error)
+      } catch {
         toast.error('Failed to delete vendor')
       }
     }

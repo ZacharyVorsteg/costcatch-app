@@ -69,8 +69,8 @@ export default function InventoryPage() {
           }
         }
       }
-    } catch (error) {
-      console.error('Error loading inventory:', error)
+    } catch {
+      // Inventory load failed - continue with empty state
     } finally {
       setLoading(false)
     }
@@ -117,8 +117,8 @@ export default function InventoryPage() {
           setItems(newItems)
         }
       }
-    } catch (error) {
-      console.error('Error seeding default data:', error)
+    } catch {
+      // Seeding failed - user can add items manually
     }
   }
 
@@ -166,8 +166,7 @@ export default function InventoryPage() {
           }
         }
       }
-    } catch (error) {
-      console.error('Error saving item:', error)
+    } catch {
       toast.error('Failed to save item')
     }
   }
@@ -179,8 +178,7 @@ export default function InventoryPage() {
         if (error) throw error
         setItems(items.filter((i) => i.id !== item.id))
         toast.success('Item deleted')
-      } catch (error) {
-        console.error('Error deleting item:', error)
+      } catch {
         toast.error('Failed to delete item')
       }
     }
