@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase-server'
+import { validateItemCreate, validateItemUpdate } from '@/lib/validation'
 
 export async function GET(request: NextRequest) {
   try {
@@ -68,6 +69,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
+
+    // Validate input
+    const validation = validateItemCreate(body)
+    if (!validation.valid) {
+      return NextResponse.json({ error: 'Validation failed', details: validation.errors }, { status: 400 })
+    }
+
     const { name, category_id, unit, current_price, par_level, vendor_id } = body
 
     const { data: item, error } = await supabase
@@ -113,6 +121,13 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
+
+    // Validate input
+    const validation = validateItemUpdate(body)
+    if (!validation.valid) {
+      return NextResponse.json({ error: 'Validation failed', details: validation.errors }, { status: 400 })
+    }
+
     const { id, ...updates } = body
 
     // Ensure item belongs to user's restaurant
