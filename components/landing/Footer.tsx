@@ -11,7 +11,6 @@ const footerLinks = {
   ],
   Support: [
     { name: 'Contact', href: 'mailto:support@costcatch.com' },
-    { name: 'Help', href: 'mailto:help@costcatch.com' },
   ],
   Legal: [
     { name: 'Privacy Policy', href: '/privacy' },
@@ -27,35 +26,34 @@ export function Footer() {
           {/* Logo & description */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="p-2 bg-brand-600 rounded-lg">
+              <div className="p-2 bg-emerald-600 rounded-lg">
                 <ChefHat className="h-6 w-6 text-white" />
               </div>
               <span className="text-xl font-bold text-white">CostCatch</span>
             </div>
-            <p className="text-gray-400 max-w-xs">
-              The 60-second inventory system that helps restaurants cut food costs
-              and reduce waste.
+            <p className="text-gray-400 text-sm">
+              The 60-second inventory system that helps restaurants cut food costs.
             </p>
           </div>
 
           {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h3 className="font-semibold text-white mb-3">{category}</h3>
-              <ul className="space-y-2">
+              <h3 className="font-semibold text-white mb-4 text-sm">{category}</h3>
+              <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.name}>
                     {link.href.startsWith('mailto:') ? (
                       <a
                         href={link.href}
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="text-gray-400 hover:text-white text-sm transition-colors"
                       >
                         {link.name}
                       </a>
                     ) : (
                       <Link
                         href={link.href}
-                        className="text-gray-400 hover:text-white transition-colors"
+                        className="text-gray-400 hover:text-white text-sm transition-colors"
                       >
                         {link.name}
                       </Link>
@@ -67,12 +65,10 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">
+        {/* Bottom */}
+        <div className="mt-12 pt-8 border-t border-gray-800 text-center">
+          <p className="text-gray-500 text-sm">
             &copy; {new Date().getFullYear()} CostCatch. All rights reserved.
-          </p>
-          <p className="text-gray-400 text-sm mt-2 sm:mt-0">
-            Made with care for restaurant owners everywhere.
           </p>
         </div>
       </div>
